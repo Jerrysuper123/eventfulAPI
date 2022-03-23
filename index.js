@@ -4,7 +4,6 @@ const cors = require("cors");
 
 require("dotenv").config();
 
-
 //must use below to install nodemon
 //npm install -g nodemon (yarn install nodemon does not work)
 
@@ -23,19 +22,19 @@ const ObjectId = require("mongodb").ObjectId;
 
 //2. route
 app.get("/", (req, res) => {
-    res.send("hello world")
+    res.send("You have connected to eventful API. Welcome!")
 })
 
 async function main() {
     //general name to be accessed later
-    const COLLECTION_NAME = "disease_symptoms";
+    const COLLECTION_NAME = "events";
 
     //connect to database, oncetime connection, later can use getDB directly to access the database
-    await connect(process.env.MONGO_URI, "diseaseSymptomsDB");
+    await connect(process.env.MONGO_URI, "eventfulDB");
 
     app.get("/welcome", (req, res) => {
         res.json({
-            message: "welcome to disease symptom db"
+            message: "welcome to eventful API"
         })
     })
 
@@ -45,23 +44,56 @@ async function main() {
         "symptoms": "cough,blocked nose",
     } */
     /*1 create*/
-    app.post("/disease_symptoms", async (req, res) => {
+    app.post("/events", async (req, res) => {
         try {
             // console.log(req.body);
-            let disease = req.body.disease;
-            let symptom = req.body.symptoms.split(",");
-            let datetime = new Date();
+            /*1. basic info */
+            let title = req.body.title;
+            let organizer = req.body.organizer;
+            let category = req.body.category;
+            let hashtags = req.body.hashtags;
+
+            /*2. location */
+            let address = req.body.address;
+            let postalCode = req.body.postalCode;
+
+            //retrieve lat and lng using OneMap API
+            let latLng = [];
+
+            /*3. date and time */
+            let startDateTime = req.body.startDateTime;
+            let endDateTime = req.body.endDateTime;
+
+            /*4. main event image */
+            let eventImage = req.body.eventImage;
+            let customizedMapMarker = req.body.customizedMapMarker;
+            let brandColor = req.body.brandColor;
+
+            /*5. description */
+            let descriptionSummary = req.body.descriptionSummary;
+            let description = req.body.description;
 
             //get db
             const db = getDB();
             await db.collection(COLLECTION_NAME).insertOne({
-                disease,
-                symptom,
-                datetime
+                title,
+                organizer,
+                category,
+                hashtags,
+                address,
+                postalCode,
+                latLng,
+                startDateTime,
+                endDateTime,
+                eventImage,
+                customizedMapMarker,
+                brandColor,
+                descriptionSummary,
+                description
             })
             res.status(200);
             res.json({
-                "message": "successly post one disease"
+                message: "successly post one event"
             })
         } catch {
             res.status(500);
@@ -72,88 +104,88 @@ async function main() {
     })
 
     /*read*/
-    app.get("/disease_symptoms", async (req, res) => {
-        //req.query = ?disease="dengue"&symptoms="cough" = {disease: "dengue", symptoms: "cough"}
-        // console.log(req.query);
+    // app.get("/events", async (req, res) => {
+    //     //req.query = ?disease="dengue"&symptoms="cough" = {disease: "dengue", symptoms: "cough"}
+    //     // console.log(req.query);
 
-        let criteria = {};
+    //     let criteria = {};
 
 
-        if (req.query.disease) {
-            criteria["disease"] = {
-                "$regex": req.query.disease,
-                "$options": "i"
-            };
-        }
+    //     if (req.query.disease) {
+    //         criteria["disease"] = {
+    //             "$regex": req.query.disease,
+    //             "$options": "i"
+    //         };
+    //     }
 
-        if (req.query.symptom) {
-            criteria["symptom"] = {
-                "$in": [req.query.symptom]
-            };
-        }
-        // read from right to left, flu is in disease, cough is in array symptom
-        // {
-        //     disease: { '$regex': 'flu', options: 'i' },
-        //     symptom: { '$in': [ 'cough' ] }
-        //   }
+    //     if (req.query.symptom) {
+    //         criteria["symptom"] = {
+    //             "$in": [req.query.symptom]
+    //         };
+    //     }
+    //     // read from right to left, flu is in disease, cough is in array symptom
+    //     // {
+    //     //     disease: { '$regex': 'flu', options: 'i' },
+    //     //     symptom: { '$in': [ 'cough' ] }
+    //     //   }
 
-        // console.log(criteria);
+    //     // console.log(criteria);
 
-        const db = getDB();
-        let diseaseSymptoms = await db.collection(COLLECTION_NAME).find(criteria).toArray();
-        res.json({
-            data: diseaseSymptoms
-        })
-    })
+    //     const db = getDB();
+    //     let diseaseSymptoms = await db.collection(COLLECTION_NAME).find(criteria).toArray();
+    //     res.json({
+    //         data: diseaseSymptoms
+    //     })
+    // })
 
     /*update*/
 
-    app.put("/disease_symptoms/:id", async (req, res) => {
+    // app.put("/events/:id", async (req, res) => {
 
-        try {
-            // let {disease, symptom} = req.body;
-            // console.log(req.body);
-            let disease = req.body.disease;
-            // console.log("symptom",req.body.symptom);
-            let symptom = req.body.symptom.split(",").map(el => el.trim());
-            // console.log(disease, symptom)
-            datetime = new Date();
+    //     try {
+    //         // let {disease, symptom} = req.body;
+    //         // console.log(req.body);
+    //         let disease = req.body.disease;
+    //         // console.log("symptom",req.body.symptom);
+    //         let symptom = req.body.symptom.split(",").map(el => el.trim());
+    //         // console.log(disease, symptom)
+    //         datetime = new Date();
 
-            await getDB().collection(COLLECTION_NAME).updateOne({
-                "_id": ObjectId(req.params.id)
-            }, {
-                "$set": {
-                    disease,
-                    symptom,
-                    datetime
-                }
-            })
+    //         await getDB().collection(COLLECTION_NAME).updateOne({
+    //             "_id": ObjectId(req.params.id)
+    //         }, {
+    //             "$set": {
+    //                 disease,
+    //                 symptom,
+    //                 datetime
+    //             }
+    //         })
 
-            res.status(200);
-            res.json({
-                message: `modified one`
-            })
+    //         res.status(200);
+    //         res.json({
+    //             message: `modified one`
+    //         })
 
-        } catch (error) {
-            res.status(505);
-            res.json({
-                message: "update failed"
-            })
-            console.log(error);
-        }
+    //     } catch (error) {
+    //         res.status(505);
+    //         res.json({
+    //             message: "update failed"
+    //         })
+    //         console.log(error);
+    //     }
 
-    })
+    // })
 
     /*delete */
-    app.delete("/disease_symptoms/:id", async (req, res) => {
-        await getDB().collection(COLLECTION_NAME).deleteOne({
-            "_id": ObjectId(req.params.id)
-        })
-        res.status(200)
-        res.json({
-            message: "deleted successfully"
-        })
-    })
+    // app.delete("/events/:id", async (req, res) => {
+    //     await getDB().collection(COLLECTION_NAME).deleteOne({
+    //         "_id": ObjectId(req.params.id)
+    //     })
+    //     res.status(200)
+    //     res.json({
+    //         message: "deleted successfully"
+    //     })
+    // })
 }
 
 main();
