@@ -76,8 +76,8 @@ async function main() {
             let latLng = req.body.latLng;
 
             /*3. date and time */
-            let startDateTime = req.body.startDateTime;
-            let endDateTime = req.body.endDateTime;
+            let startDateTime = new Date(req.body.startDateTime);
+            let endDateTime = new Date(req.body.endDateTime);
 
             /*4. main event image */
             let eventImage = req.body.eventImage;
@@ -120,7 +120,10 @@ async function main() {
 
     /*read*/
     app.get("/events", async (req, res) => {
-        //req.query = ?title=recycle day&category=education& => {title: "army", category: "promotion"}
+        //req.query = ?title=recycle day&category=education&startDateTime=2022-03-20&organizer=H&M 
+        //=> {title: "army", category: "education",startDateTime=2022-03-20&organizer: "H&M" }
+        //each time load the whole month data into the app
+
         console.log(req.query);
 
         // <option>education</option>
@@ -132,14 +135,10 @@ async function main() {
 
 
         try {
+            /*retrieve events for all dates for now, even though we only loads in for the month data*/
+            /*the datasize is small */
             let criteria = {};
 
-            if (req.query.title) {
-                criteria["title"] = {
-                    "$regex": req.query.title,
-                    "$options": "i"
-                };
-            }
             if (req.query.category) {
                 criteria["category"] = {
                     "$regex": req.query.category,
@@ -148,11 +147,74 @@ async function main() {
             }
 
             /*if need to search for something in an array */
-            // if (req.query.symptom) {
-            //     criteria["symptom"] = {
-            //         "$in": [req.query.symptom]
-            //     };
-            // }
+            if (req.query.hashtags) {
+                criteria["hashtags"] = {
+                    "$in": [req.query.hashtags]
+                };
+            }
+
+            /*implement but will not use it in front end for now  */
+            if (req.query.startDateTime) {
+                criteria["startDateTime"] = {
+                    "$gte": new Date(req.query.startDateTime),
+                };
+            }
+
+            // db.customers.find({
+            //     $or: [
+            //       {
+            //         Country: "Germany"
+            //       },
+            //       {
+            //         Country: "France"
+            //       }
+            //     ]
+            //   })
+
+            /*general search will look through title, organizer, descriptionSummmary, description */
+            if (req.query.search) {
+                criteria["$or"] = [
+                    {
+                        title: {
+                            "$regex": req.query.search,
+                            "$options": "i"
+                        }
+                    },
+                    {
+                        organizer: {
+                            "$regex": req.query.search,
+                            "$options": "i"
+                        }
+                    },
+                    {
+                        descriptionSummary: {
+                            "$regex": req.query.search,
+                            "$options": "i"
+                        }
+                    },
+                    {
+                        description: {
+                            "$regex": req.query.search,
+                            "$options": "i"
+                        }
+                    }
+                ]
+            }
+
+            /*specific search for title and organizer */
+            if (req.query.title) {
+                criteria["title"] = {
+                    "$regex": req.query.title,
+                    "$options": "i"
+                };
+            }
+
+            if (req.query.organizer) {
+                criteria["organizer"] = {
+                    "$regex": req.query.organizer,
+                    "$options": "i"
+                };
+            }
 
             const db = getDB();
             let events = await db.collection(COLLECTION_NAME).find(criteria).toArray();
