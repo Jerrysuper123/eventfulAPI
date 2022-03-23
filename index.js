@@ -104,6 +104,41 @@ async function main() {
         }
     })
 
+     /*read hashtags*/
+     app.get("/events/hashtags", async (req, res) => {
+
+        try {
+            const db = getDB();
+            let hashtags = await db.collection("hashtags").find().toArray();
+            res.status(200);
+            res.json({
+                data: hashtags
+            })
+        } catch (e) {
+            res.status(500);
+            res.json({
+                message: "failed to retrieve hashtags from eventful API"
+            })
+        }
+    })
+
+    /*read categories*/
+    app.get("/events/categories", async (req, res) => {
+        try {
+            const db = getDB();
+            let categories = await db.collection("categories").find().toArray();
+            res.status(200);
+            res.json({
+                data: categories
+            })
+        } catch (e) {
+            res.status(500);
+            res.json({
+                message: "failed to retrieve categories from eventful API"
+            })
+        }
+    })
+
     /*read event*/
     app.get("/events", async (req, res) => {
         //req.query = ?title=recycle day&category=education&startDateTime=2022-03-20&organizer=H&M 
@@ -195,40 +230,7 @@ async function main() {
         }
     })
 
-     /*read hashtags*/
-     app.get("/events/hashtags", async (req, res) => {
-
-        try {
-            const db = getDB();
-            let hashtags = await db.collection("hashtags").find().toArray();
-            res.status(200);
-            res.json({
-                data: hashtags
-            })
-        } catch (e) {
-            res.status(500);
-            res.json({
-                message: "failed to retrieve hashtags from eventful API"
-            })
-        }
-    })
-
-       /*read categories*/
-       app.get("/events/categories", async (req, res) => {
-        try {
-            const db = getDB();
-            let categories = await db.collection("categories").find().toArray();
-            res.status(200);
-            res.json({
-                data: categories
-            })
-        } catch (e) {
-            res.status(500);
-            res.json({
-                message: "failed to retrieve categories from eventful API"
-            })
-        }
-    })
+    
 
     /*update event*/
     app.put("/events/:id/update", async (req, res) => {
@@ -359,6 +361,6 @@ async function main() {
 main();
 
 //3. listen process.env.PORT
-app.listen(process.env.PORT, () => {
+app.listen(3000, () => {
     console.log("server has started")
 })
