@@ -106,7 +106,7 @@ https://eventfulapi.herokuapp.com/events/:id/delete
 | Heroku  | server for the API |
 
 # Testing
-Testing is done for all http methods using (Advanced Rest Client)[https://install.advancedrestclient.com/install].
+Testing is done for all http methods using [Advanced Rest Client](https://install.advancedrestclient.com/install).
 
 # Deployment steps
 The deployment is done through [Heroku](https://devcenter.heroku.com/articles/git#deploy-your-code).
