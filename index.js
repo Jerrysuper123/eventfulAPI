@@ -314,15 +314,24 @@ async function main() {
     })
 
     /*delete */
-    // app.delete("/events/:id/delete", async (req, res) => {
-    //     await getDB().collection(COLLECTION_NAME).deleteOne({
-    //         "_id": ObjectId(req.params.id)
-    //     })
-    //     res.status(200)
-    //     res.json({
-    //         message: "deleted successfully"
-    //     })
-    // })
+    app.delete("/events/:id/delete", async (req, res) => {
+        try{
+            await getDB().collection(COLLECTION_NAME).deleteOne({
+                "_id": ObjectId(req.params.id)
+            })
+            res.status(200)
+            res.json({
+                message: "deleted one event successfully"
+            })
+
+        }catch(e){
+            res.status(505);
+            res.json({
+                message: "delete failed"
+            })
+            console.log(error);
+        }
+    })
 }
 
 main();
