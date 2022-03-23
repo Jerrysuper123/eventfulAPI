@@ -1,11 +1,11 @@
 # eventful API
-eventful API is a restful API, designed using Node js (express) and Mongodb. It mainly used to connected to the its front-end web app, built using React.
+eventful API is a restful API, designed using Node js (express) and Mongodb. It mainly used to connect to the its front-end web app, built using React.
 
 
 
 | API  | description | Auth  | HTPPS  | CORS  |
 | ------------- | ------------- | ------------- |------------- |------------- |
-| eventful API   | resource to get events listed in Singapore  | No  |Yes |Yes |
+| [eventful API](https://eventfulapi.herokuapp.com/)   | resource to get events listed in Singapore  | No  |Yes |Yes |
 
 
 
@@ -35,7 +35,7 @@ For example, to search for education (category) events after "2022-03-22" with t
 ```
 https://eventfulapi.herokuapp.com/events?category=education&startDateTime=2022-03-22&title=wellness
 ```
-Combining multiple parameters, making sophisticated query is possible.
+Combining with multiple parameters, making sophisticated query is possible.
 
 | parameter  | value | usage  | 
 | ------------- | ------------- | ------------- |
@@ -78,12 +78,14 @@ To update an event, use below end point, where :id is the event id created by Mo
 https://eventfulapi.herokuapp.com/events/:id/update
 ```
 
-Though the PUT method, pass along relevant fields to be updated with reference to the Data Schema table in 3.POST section.
+Though the PUT request, pass along relevant fields to be updated with reference to the Data Schema table in 3.POST section.
 
 ### Create event reviews for existing events
 ```
 https://eventfulapi.herokuapp.com/events/:id/reviews/create
 ```
+
+Along with the PUT request, pass along an object with below data fields.
 #### Data Schema - event review
 | field  | value |
 | ------------- | ------------- |
@@ -104,6 +106,19 @@ https://eventfulapi.herokuapp.com/events/:id/delete
 | Mongodb  | connect to cloud database  |
 | Mongodb Atlas  | cloud database |
 | Heroku  | server for the API |
+
+# Database design
+The Organizer entity is currently embeded in the Event entity without log in function for users, to be implemented in the future. 
+
+<em>One to many relationship</em>
+- Organizer to Event
+- Category to Event
+- Review to Event
+
+<em>Many to many relationship</em>
+- Hashtag to Event
+
+![database design](./images/dataBaseDesign.png)
 
 # Testing
 Testing is done for all http methods using [Advanced Rest Client](https://install.advancedrestclient.com/install).
