@@ -120,8 +120,8 @@ async function main() {
 
     /*read*/
     app.get("/events", async (req, res) => {
-        //req.query = ?title="recycle day"&category="promotion" = {disease: "dengue", symptoms: "cough"}
-        // console.log(req.query);
+        //req.query = ?title=recycle day&category=education& => {title: "army", category: "promotion"}
+        console.log(req.query);
 
         // <option>education</option>
         // <option>health & wellness</option>
@@ -129,6 +129,7 @@ async function main() {
         // <option>community & cultural</option>
         // <option>promotion</option>
         // <option>tourism</option>
+
 
         try {
             let criteria = {};
