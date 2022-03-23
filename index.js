@@ -324,6 +324,6 @@ async function main() {
 main();
 
 //3. listen process.env.PORT
-app.listen(3000, () => {
+app.listen(process.env.PORT, () => {
     console.log("server has started")
 })

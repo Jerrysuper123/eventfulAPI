@@ -1,4 +1,23 @@
 {
+  "name": "eventfulapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jerrysuper123/eventfulAPI.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jerrysuper123/eventfulAPI/issues"
+  },
+  "homepage": "https://github.com/Jerrysuper123/eventfulAPI#readme",
+
   "dependencies": {
     "axios": "^0.26.1",
     "cors": "^2.8.5",
