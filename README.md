@@ -46,6 +46,15 @@ Combining with multiple parameters, making sophisticated query is possible.
 | startDateTime  | ISO date string e.g. "2022-03-23" |search events after this date  |
 | search  | string |general search for matched events by the event title, organizer, and event description   |
 
+### GET hashtags
+```
+https://eventfulapi.herokuapp.com/events/hashtags
+```
+### Get categories
+```
+https://eventfulapi.herokuapp.com/events/categories
+```
+
 ## 3. POST
 Use below to create a new event.
 ```
