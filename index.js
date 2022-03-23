@@ -58,7 +58,6 @@ async function main() {
     } */
     /*1 create*/
     app.post("/events/create", async (req, res) => {
-        console.log(req.body);
         try {
             // console.log(req.body);
             /*1. basic info */
@@ -124,16 +123,6 @@ async function main() {
         //=> {title: "army", category: "education",startDateTime=2022-03-20&organizer: "H&M" }
         //each time load the whole month data into the app
 
-        console.log(req.query);
-
-        // <option>education</option>
-        // <option>health & wellness</option>
-        // <option>science & tech</option>
-        // <option>community & cultural</option>
-        // <option>promotion</option>
-        // <option>tourism</option>
-
-
         try {
             /*retrieve events for all dates for now, even though we only loads in for the month data*/
             /*the datasize is small */
@@ -153,23 +142,12 @@ async function main() {
                 };
             }
 
-            /*implement but will not use it in front end for now  */
+            /*implement but will not use it in front-end for now  */
             if (req.query.startDateTime) {
                 criteria["startDateTime"] = {
                     "$gte": new Date(req.query.startDateTime),
                 };
             }
-
-            // db.customers.find({
-            //     $or: [
-            //       {
-            //         Country: "Germany"
-            //       },
-            //       {
-            //         Country: "France"
-            //       }
-            //     ]
-            //   })
 
             /*general search will look through title, organizer, descriptionSummmary, description */
             if (req.query.search) {
@@ -228,47 +206,74 @@ async function main() {
                 message: "failed to retrieve events from eventful API"
             })
         }
-
-
     })
 
-    /*update*/
+    /*update event*/
+    app.put("/events/:id/update", async (req, res) => {
 
-    // app.put("/events/:id/update", async (req, res) => {
+        try {
+           // console.log(req.body);
+            /*1. basic info */
+            let title = req.body.title;
+            let organizer = req.body.organizer;
+            let category = req.body.category;
+            let hashtags = req.body.hashtags;
 
-    //     try {
-    //         // let {disease, symptom} = req.body;
-    //         // console.log(req.body);
-    //         let disease = req.body.disease;
-    //         // console.log("symptom",req.body.symptom);
-    //         let symptom = req.body.symptom.split(",").map(el => el.trim());
-    //         // console.log(disease, symptom)
-    //         datetime = new Date();
+            /*2. location */
+            let address = req.body.address;
+            let postalCode = req.body.postalCode;
 
-    //         await getDB().collection(COLLECTION_NAME).updateOne({
-    //             "_id": ObjectId(req.params.id)
-    //         }, {
-    //             "$set": {
-    //                 disease,
-    //                 symptom,
-    //                 datetime
-    //             }
-    //         })
+            //retrieve lat and lng using OneMap API, maybe we should do it on browser side
+            //but we need to validate lat and lng on browser side
+            let latLng = req.body.latLng;
 
-    //         res.status(200);
-    //         res.json({
-    //             message: `modified one`
-    //         })
+            /*3. date and time */
+            let startDateTime = new Date(req.body.startDateTime);
+            let endDateTime = new Date(req.body.endDateTime);
 
-    //     } catch (error) {
-    //         res.status(505);
-    //         res.json({
-    //             message: "update failed"
-    //         })
-    //         console.log(error);
-    //     }
+            /*4. main event image */
+            let eventImage = req.body.eventImage;
+            let customizedMapMarker = req.body.customizedMapMarker;
+            let brandColor = req.body.brandColor;
 
-    // })
+            /*5. description */
+            let descriptionSummary = req.body.descriptionSummary;
+            let description = req.body.description;
+
+            await getDB().collection(COLLECTION_NAME).updateOne({
+                "_id": ObjectId(req.params.id)
+            }, {
+                "$set": {
+                    title,
+                    organizer,
+                    category,
+                    hashtags,
+                    address,
+                    postalCode,
+                    latLng,
+                    startDateTime,
+                    endDateTime,
+                    eventImage,
+                    customizedMapMarker,
+                    brandColor,
+                    descriptionSummary,
+                    description
+                }
+            })
+
+            res.status(200);
+            res.json({
+                message: `modified one event`
+            })
+
+        } catch (error) {
+            res.status(505);
+            res.json({
+                message: "update failed"
+            })
+            console.log(error);
+        }
+    })
 
     /*delete */
     // app.delete("/events/:id/delete", async (req, res) => {
