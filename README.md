@@ -1,5 +1,5 @@
 # eventful API
-This is a restful API, designed using Node js (express) and Mongodb. It is mainly used to connect to the its front-end web app, built using React.
+This is a restful API, designed using Node js (express) and Mongodb. It is mainly used to connect to its front-end web app, built using React.
 
 
 
