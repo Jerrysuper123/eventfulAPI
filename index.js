@@ -1,6 +1,7 @@
 //import
 const express = require("express");
 const cors = require("cors");
+const axios = require("axios");
 
 require("dotenv").config();
 
@@ -25,6 +26,24 @@ app.get("/", (req, res) => {
     res.send("You have connected to eventful API. Welcome!")
 })
 
+//get lat and lng based on postal code
+const getLatLng = async (postalCode) => {
+    try {
+        let response = await axios.get(`https://developers.onemap.sg/commonapi/search?searchVal=${postalCode}&returnGeom=Y&getAddrDetails=Y&pageNum=1`);
+        if (response.found === 0) {
+            return `Postal code lat and lng not found; try change postal code again`
+        } else if (response.results[0]) {
+            let lat = Number(response.results[0].LATITUDE);
+            let lng = Number(response.results[0].LONGITUDE);
+            console.log([lat, lng]);
+            return [lat, lng]
+        }
+    } catch (e) {
+        console.log(e);
+        return `oneMap API failed to retrieve the postal code's lat and lng`
+    }
+}
+
 async function main() {
     //general name to be accessed later
     const COLLECTION_NAME = "events";
@@ -32,19 +51,14 @@ async function main() {
     //connect to database, oncetime connection, later can use getDB directly to access the database
     await connect(process.env.MONGO_URI, "eventfulDB");
 
-    app.get("/welcome", (req, res) => {
-        res.json({
-            message: "welcome to eventful API"
-        })
-    })
-
     /*CRUD below */
     /*{
         "disease": "flu",
         "symptoms": "cough,blocked nose",
     } */
     /*1 create*/
-    app.post("/events", async (req, res) => {
+    app.post("/events/create", async (req, res) => {
+        console.log(req.body);
         try {
             // console.log(req.body);
             /*1. basic info */
@@ -57,8 +71,9 @@ async function main() {
             let address = req.body.address;
             let postalCode = req.body.postalCode;
 
-            //retrieve lat and lng using OneMap API
-            let latLng = [];
+            //retrieve lat and lng using OneMap API, maybe we should do it on browser side
+            //but we need to validate lat and lng on browser side
+            let latLng = req.body.latLng;
 
             /*3. date and time */
             let startDateTime = req.body.startDateTime;
@@ -104,43 +119,59 @@ async function main() {
     })
 
     /*read*/
-    // app.get("/events", async (req, res) => {
-    //     //req.query = ?disease="dengue"&symptoms="cough" = {disease: "dengue", symptoms: "cough"}
-    //     // console.log(req.query);
+    app.get("/events", async (req, res) => {
+        //req.query = ?title="recycle day"&category="promotion" = {disease: "dengue", symptoms: "cough"}
+        // console.log(req.query);
 
-    //     let criteria = {};
+        // <option>education</option>
+        // <option>health & wellness</option>
+        // <option>science & tech</option>
+        // <option>community & cultural</option>
+        // <option>promotion</option>
+        // <option>tourism</option>
+
+        try {
+            let criteria = {};
+
+            if (req.query.title) {
+                criteria["title"] = {
+                    "$regex": req.query.title,
+                    "$options": "i"
+                };
+            }
+            if (req.query.category) {
+                criteria["category"] = {
+                    "$regex": req.query.category,
+                    "$options": "i"
+                };
+            }
+
+            /*if need to search for something in an array */
+            // if (req.query.symptom) {
+            //     criteria["symptom"] = {
+            //         "$in": [req.query.symptom]
+            //     };
+            // }
+
+            const db = getDB();
+            let events = await db.collection(COLLECTION_NAME).find(criteria).toArray();
+            res.status(200);
+            res.json({
+                data: events
+            })
+        } catch (e) {
+            res.status(500);
+            res.json({
+                message: "failed to retrieve events from eventful API"
+            })
+        }
 
 
-    //     if (req.query.disease) {
-    //         criteria["disease"] = {
-    //             "$regex": req.query.disease,
-    //             "$options": "i"
-    //         };
-    //     }
-
-    //     if (req.query.symptom) {
-    //         criteria["symptom"] = {
-    //             "$in": [req.query.symptom]
-    //         };
-    //     }
-    //     // read from right to left, flu is in disease, cough is in array symptom
-    //     // {
-    //     //     disease: { '$regex': 'flu', options: 'i' },
-    //     //     symptom: { '$in': [ 'cough' ] }
-    //     //   }
-
-    //     // console.log(criteria);
-
-    //     const db = getDB();
-    //     let diseaseSymptoms = await db.collection(COLLECTION_NAME).find(criteria).toArray();
-    //     res.json({
-    //         data: diseaseSymptoms
-    //     })
-    // })
+    })
 
     /*update*/
 
-    // app.put("/events/:id", async (req, res) => {
+    // app.put("/events/:id/update", async (req, res) => {
 
     //     try {
     //         // let {disease, symptom} = req.body;
@@ -177,7 +208,7 @@ async function main() {
     // })
 
     /*delete */
-    // app.delete("/events/:id", async (req, res) => {
+    // app.delete("/events/:id/delete", async (req, res) => {
     //     await getDB().collection(COLLECTION_NAME).deleteOne({
     //         "_id": ObjectId(req.params.id)
     //     })
