@@ -3,13 +3,13 @@ This is a restful API, designed using Node js (express) and Mongodb. It is mainl
 
 
 
-| API  | description | Auth  | HTPPS  | CORS  |
+| API  | description | Auth  | HTTPS  | CORS  |
 | ------------- | ------------- | ------------- |------------- |------------- |
 | [eventful API](https://eventfulapi.herokuapp.com/)   | resource to get events listed in Singapore  | No  |Yes |Yes |
 
 
 
->disclaimer: The ongoing events in this app are dummy data, which are used for school project <em>only</em>. Please do not take them as formal events from the official organizers.
+>Disclaimer: the ongoing events in the database are dummy data, which are used for school project <em>only</em>. Please do not take them as formal events from the official organizers.
 
 
 ## 1. Base url deployed on Heroku
