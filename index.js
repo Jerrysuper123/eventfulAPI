@@ -4,7 +4,6 @@ const cors = require("cors");
 const axios = require("axios");
 require("dotenv").config();
 
-
 //1. set up
 const app = express();
 //allow user to submit json format
