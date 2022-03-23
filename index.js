@@ -1,14 +1,9 @@
-//import
+
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
-
 require("dotenv").config();
 
-//must use below to install nodemon
-//npm install -g nodemon (yarn install nodemon does not work)
-
-// console.log(process.env.MONGO_URI);
 
 //1. set up
 const app = express();
@@ -51,15 +46,9 @@ async function main() {
     //connect to database, oncetime connection, later can use getDB directly to access the database
     await connect(process.env.MONGO_URI, "eventfulDB");
 
-    /*CRUD below */
-    /*{
-        "disease": "flu",
-        "symptoms": "cough,blocked nose",
-    } */
-    /*1 create*/
+    /*create event*/
     app.post("/events/create", async (req, res) => {
         try {
-            // console.log(req.body);
             /*1. basic info */
             let title = req.body.title;
             let organizer = req.body.organizer;
@@ -87,7 +76,6 @@ async function main() {
             let descriptionSummary = req.body.descriptionSummary;
             let description = req.body.description;
 
-            //get db
             const db = getDB();
             await db.collection(COLLECTION_NAME).insertOne({
                 title,
@@ -117,7 +105,7 @@ async function main() {
         }
     })
 
-    /*read*/
+    /*read event*/
     app.get("/events", async (req, res) => {
         //req.query = ?title=recycle day&category=education&startDateTime=2022-03-20&organizer=H&M 
         //=> {title: "army", category: "education",startDateTime=2022-03-20&organizer: "H&M" }
