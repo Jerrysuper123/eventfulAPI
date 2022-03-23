@@ -1,5 +1,5 @@
 # eventful API
-eventful API is a restful API, designed using Node js (express) and Mongodb. It mainly used to connect to the its front-end web app, built using React.
+This is a restful API, designed using Node js (express) and Mongodb. It is mainly used to connect to the its front-end web app, built using React.
 
 
 
@@ -108,7 +108,7 @@ https://eventfulapi.herokuapp.com/events/:id/delete
 | Heroku  | server for the API |
 
 # Database design
-The Organizer entity is currently embeded in the Event entity without log in function for users, to be implemented in the future. 
+The Organizer entity is currently embeded in the Event entity without the sign in/out function for users, to be implemented in the future. 
 
 <em>One to many relationship</em>
 - Organizer to Event
