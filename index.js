@@ -212,7 +212,7 @@ async function main() {
     app.put("/events/:id/update", async (req, res) => {
 
         try {
-           // console.log(req.body);
+            // console.log(req.body);
             /*1. basic info */
             let title = req.body.title;
             let organizer = req.body.organizer;
@@ -260,6 +260,44 @@ async function main() {
                     description
                 }
             })
+
+            res.status(200);
+            res.json({
+                message: `modified one event`
+            })
+
+        } catch (error) {
+            res.status(505);
+            res.json({
+                message: "update failed"
+            })
+            console.log(error);
+        }
+    })
+
+    /*create reviews for event*/
+    app.put("/events/:id/reviews/create", async (req, res) => {
+
+        try {
+            // console.log(req.body);
+            /*1. basic info */
+            let name = req.body.name;
+            let rating = Number(req.body.rating);
+            let feedback = req.body.feedback;
+
+            await getDB().collection(COLLECTION_NAME).updateOne({
+                "_id": ObjectId(req.params.id)
+            }, {
+                '$push': {
+                    'reviews': {
+                        '_id': ObjectId(),
+                        'name': name,
+                        'rating': rating,
+                        'feedback': feedback
+                    }
+                }
+            }
+            )
 
             res.status(200);
             res.json({
