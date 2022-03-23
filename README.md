@@ -1,5 +1,5 @@
 # eventful API
-eventful API is a restful API, designed using Node js (express) and Mongodb. It mainly used to connected to the eventful web app, built using React.
+eventful API is a restful API, designed using Node js (express) and Mongodb. It mainly used to connected to the its front-end web app, built using React.
 
 
 
@@ -104,6 +104,9 @@ https://eventfulapi.herokuapp.com/events/:id/delete
 | Mongodb  | connect to cloud database  |
 | Mongodb Atlas  | cloud database |
 | Heroku  | server for the API |
+
+# Testing
+Testing is done for all http methods using (Advanced Rest Client)[https://install.advancedrestclient.com/install].
 
 # Deployment steps
 The deployment is done through [Heroku](https://devcenter.heroku.com/articles/git#deploy-your-code).
