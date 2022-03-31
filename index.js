@@ -115,12 +115,37 @@ async function main() {
             /*the datasize is small */
             let criteria = {};
 
+            // if(req.query.searchCategories){
+            //     criteria["category"] = {
+            //         "$regex": req.query.category,
+            //         "$options": "i"
+            //     };
+            // }
+
+            /*An array to match an array query, return if true */
+            if (req.query.searchCategories) {
+                console.log(req.query.searchCategories);
+                criteria["category"] = {
+                    $in: req.query.searchCategories
+                };
+            }
+
+               /*An array to match an array query, return if true */
+               if (req.query.searchTags) {
+                // console.log(req.query.searchTags);
+                criteria["hashtags"] = {
+                    $in: req.query.searchTags
+                };
+            }
+
             if (req.query.category) {
                 criteria["category"] = {
                     "$regex": req.query.category,
                     "$options": "i"
                 };
             }
+
+         
 
             /*if need to search for something in an array */
             if (req.query.hashtags) {
@@ -129,7 +154,6 @@ async function main() {
                 };
             }
 
-            /*implement but will not use it in front-end for now  */
             if (req.query.startDateTime) {
                 criteria["startDateTime"] = {
                     "$gte": new Date(req.query.startDateTime),
@@ -195,8 +219,8 @@ async function main() {
         }
     })
 
-     /*read hashtags*/
-     app.get("/events/hashtags", async (req, res) => {
+    /*read hashtags*/
+    app.get("/events/hashtags", async (req, res) => {
 
         try {
             const db = getDB();
@@ -213,8 +237,8 @@ async function main() {
         }
     })
 
-       /*read categories*/
-       app.get("/events/categories", async (req, res) => {
+    /*read categories*/
+    app.get("/events/categories", async (req, res) => {
         try {
             const db = getDB();
             let categories = await db.collection("categories").find().toArray();
@@ -337,7 +361,7 @@ async function main() {
 
     /*delete */
     app.delete("/events/:id/delete", async (req, res) => {
-        try{
+        try {
             await getDB().collection(COLLECTION_NAME).deleteOne({
                 "_id": ObjectId(req.params.id)
             })
@@ -346,7 +370,7 @@ async function main() {
                 message: "deleted one event successfully"
             })
 
-        }catch(e){
+        } catch (e) {
             res.status(505);
             res.json({
                 message: "delete failed"
