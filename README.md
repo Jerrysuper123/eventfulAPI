@@ -52,7 +52,7 @@ Below is to match one of the multiple categoies that users have selected
 https://eventfulapi.herokuapp.com/events?searchCategories=[array]
 ```
 
-Below is to match one of the mutiple tags that users have selected
+Below is to match one of the multiple tags that users have selected
 ```
 https://eventfulapi.herokuapp.com/events?searchTags=[array]
 ```
