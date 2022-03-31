@@ -150,6 +150,20 @@ async function main() {
             /*the datasize is small */
             let criteria = {};
 
+             /*An array to match an array query, return if true */
+             if (req.query.searchCategories) {
+                criteria["category"] = {
+                    $in: req.query.searchCategories
+                };
+            }
+
+               /*An array to match an array query, return if true */
+               if (req.query.searchTags) {
+                criteria["hashtags"] = {
+                    $in: req.query.searchTags
+                };
+            }
+
             if (req.query.category) {
                 criteria["category"] = {
                     "$regex": req.query.category,
