@@ -46,11 +46,24 @@ Combining with multiple parameters, making sophisticated query is possible.
 | startDateTime  | ISO date string e.g. "2022-03-23" |search events after this date  |
 | search  | string |general search for matched events by the event title, organizer, and event description   |
 
+#### Match an array params
+Below is to match one of the multiple categoies that users have selected
+```
+https://eventfulapi.herokuapp.com/events?searchCategories=[array]
+```
+
+Below is to match one of the mutiple tags that users have selected
+```
+https://eventfulapi.herokuapp.com/events?searchTags=[array]
+```
+
 ### GET hashtags
+This is retrieve an array of hashtags to create the select boxes in the form.
 ```
 https://eventfulapi.herokuapp.com/events/hashtags
 ```
 ### Get categories
+This is retrieve an array of hashtags to create the dropdown list in the form.
 ```
 https://eventfulapi.herokuapp.com/events/categories
 ```
