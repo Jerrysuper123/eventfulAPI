@@ -20,7 +20,127 @@ app.get("/", (req, res) => {
     res.send("You have connected to eventful API. Welcome!")
 })
 
-//get lat and lng based on postal code
+//validation functions
+const validationEvent = (
+    title,
+    organizer,
+    category,
+
+    address,
+    postalCode,
+    latLng,
+    startDateTime,
+    endDateTime,
+
+    descriptionSummary,
+    description,
+    eventImage = "",
+
+    //optional
+    customizedMapMarker = "",
+    brandColor = "",
+    hashtags = [],
+) => {
+    let hasError = false;
+
+    if (title === "" || title.split(" ").length > 10) {
+        hasError = true;
+        console.log("title");
+    }
+
+    if (organizer === "") {
+        hasError = true;
+        console.log("organizer");
+    }
+
+    if (category === "") {
+        hasError = true;
+        console.log("cat");
+    }
+
+    if (!Array.isArray(hashtags)) {
+        hasError = true;
+        console.log("hastags");
+    }
+
+    if (address === "") {
+        hasError = true;
+        console.log("add");
+    }
+
+    if (postalCode.length !== 6) {
+        hasError = true;
+        console.log("postal");
+    }
+
+
+    if (!Array.isArray(latLng) || latLng.length != 2) {
+        hasError = true;
+        console.log("latLng");
+    }
+
+    if (eventImage === "") {
+        hasError = true;
+        console.log("eventImage");
+    }
+
+    if (startDateTime === "") {
+        hasError = true;
+        console.log("startTime");
+    }
+
+    if (endDateTime === "") {
+        hasError = true;
+        console.log("endTime");
+    }
+
+    if (!compareStartEndDate(startDateTime, endDateTime)) {
+        hasError = true;
+        console.log("compare start end time");
+    }
+
+    if (descriptionSummary === "") {
+
+        hasError = true;
+        console.log("summary");
+    }
+
+    if (description === "") {
+        hasError = true;
+        console.log("description");
+    }
+    return hasError;
+};
+
+const compareStartEndDate = (startDateTime, endDateTime) => {
+    if (startDateTime < endDateTime) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+const validateReviews = (name, rating, feedback, date) => {
+    let hasError = false;
+    if (name === "") {
+        hasError = true;
+    }
+    if (rating < 0 || rating > 5) {
+        hasError = true;
+    }
+    if (feedback === "") {
+        hasError = true;
+    }
+
+    if (date === "") {
+        hasError = true;
+    }
+    return hasError;
+};
+
+
+
+//get lat and lng based on postal code; not using this on the API
 const getLatLng = async (postalCode) => {
     try {
         let response = await axios.get(`https://developers.onemap.sg/commonapi/search?searchVal=${postalCode}&returnGeom=Y&getAddrDetails=Y&pageNum=1`);
@@ -74,30 +194,46 @@ async function main() {
             /*5. description */
             let descriptionSummary = req.body.descriptionSummary;
             let description = req.body.description;
-            // let reviews = req.body.reviews;
 
-            const db = getDB();
-            await db.collection(COLLECTION_NAME).insertOne({
+            // default is false - hasError, so inverse it
+            if (!validationEvent(
                 title,
                 organizer,
                 category,
-                hashtags,
                 address,
                 postalCode,
                 latLng,
                 startDateTime,
                 endDateTime,
-                eventImage,
-                customizedMapMarker,
-                brandColor,
                 descriptionSummary,
                 description,
-                // reviews
-            })
-            res.status(200);
-            res.json({
-                message: "successly post one event"
-            })
+                eventImage,
+            )) {
+                const db = getDB();
+                await db.collection(COLLECTION_NAME).insertOne({
+                    title,
+                    organizer,
+                    category,
+                    hashtags,
+                    address,
+                    postalCode,
+                    latLng,
+                    startDateTime,
+                    endDateTime,
+                    eventImage,
+                    customizedMapMarker,
+                    brandColor,
+                    descriptionSummary,
+                    description,
+                })
+                res.status(200);
+                res.json({
+                    message: "successly post one event"
+                })
+            } else {
+                return;
+            }
+
         } catch {
             res.status(500);
             res.json({
@@ -106,8 +242,8 @@ async function main() {
         }
     })
 
-     /*read hashtags*/
-     app.get("/events/hashtags", async (req, res) => {
+    /*read hashtags*/
+    app.get("/events/hashtags", async (req, res) => {
 
         try {
             const db = getDB();
@@ -152,15 +288,15 @@ async function main() {
             /*the datasize is small */
             let criteria = {};
 
-             /*An array to match an array query, return if true */
-             if (req.query.searchCategories) {
+            /*An array to match an array query, return if true */
+            if (req.query.searchCategories) {
                 criteria["category"] = {
                     $in: req.query.searchCategories
                 };
             }
 
-               /*An array to match an array query, return if true */
-               if (req.query.searchTags) {
+            /*An array to match an array query, return if true */
+            if (req.query.searchTags) {
                 criteria["hashtags"] = {
                     $in: req.query.searchTags
                 };
@@ -246,7 +382,7 @@ async function main() {
         }
     })
 
-    
+
 
     /*update event*/
     app.put("/events/:id/update", async (req, res) => {
@@ -317,7 +453,7 @@ async function main() {
 
     /*create reviews for event*/
     app.put("/events/:id/reviews/create", async (req, res) => {
-        
+
         try {
             // console.log(req.body);
             /*1. basic info */
@@ -326,26 +462,28 @@ async function main() {
             let feedback = req.body.feedback;
             let date = req.body.date;
 
-            await getDB().collection(COLLECTION_NAME).updateOne({
-                "_id": ObjectId(req.params.id)
-            }, {
-                '$push': {
-                    'reviews': {
-                        '_id': ObjectId(),
-                        'name': name,
-                        'rating': rating,
-                        'feedback': feedback,
-                        'date': date
+            // noerror is false, so must inverse it
+            if (!validateReviews(name, rating, feedback, date)) {
+                await getDB().collection(COLLECTION_NAME).updateOne({
+                    "_id": ObjectId(req.params.id)
+                }, {
+                    '$push': {
+                        'reviews': {
+                            '_id': ObjectId(),
+                            'name': name,
+                            'rating': rating,
+                            'feedback': feedback,
+                            'date': date
+                        }
                     }
                 }
+                )
+    
+                res.status(200);
+                res.json({
+                    message: `modified one event`
+                })
             }
-            )
-
-            res.status(200);
-            res.json({
-                message: `modified one event`
-            })
-
         } catch (error) {
             res.status(505);
             res.json({
@@ -357,7 +495,7 @@ async function main() {
 
     /*delete */
     app.delete("/events/:id/delete", async (req, res) => {
-        try{
+        try {
             await getDB().collection(COLLECTION_NAME).deleteOne({
                 "_id": ObjectId(req.params.id)
             })
@@ -366,7 +504,7 @@ async function main() {
                 message: "deleted one event successfully"
             })
 
-        }catch(e){
+        } catch (e) {
             res.status(505);
             res.json({
                 message: "delete failed"
