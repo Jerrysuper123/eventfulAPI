@@ -322,6 +322,7 @@ async function main() {
             let name = req.body.name;
             let rating = Number(req.body.rating);
             let feedback = req.body.feedback;
+            let date = req.body.date;
 
             await getDB().collection(COLLECTION_NAME).updateOne({
                 "_id": ObjectId(req.params.id)
@@ -331,7 +332,8 @@ async function main() {
                         '_id': ObjectId(),
                         'name': name,
                         'rating': rating,
-                        'feedback': feedback
+                        'feedback': feedback,
+                        'date': date
                     }
                 }
             }
