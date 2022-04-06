@@ -74,6 +74,7 @@ async function main() {
             /*5. description */
             let descriptionSummary = req.body.descriptionSummary;
             let description = req.body.description;
+            let reviews = req.body.reviews;
 
             const db = getDB();
             await db.collection(COLLECTION_NAME).insertOne({
@@ -90,7 +91,8 @@ async function main() {
                 customizedMapMarker,
                 brandColor,
                 descriptionSummary,
-                description
+                description,
+                reviews
             })
             res.status(200);
             res.json({
@@ -315,7 +317,7 @@ async function main() {
 
     /*create reviews for event*/
     app.put("/events/:id/reviews/create", async (req, res) => {
-
+        
         try {
             // console.log(req.body);
             /*1. basic info */
