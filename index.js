@@ -416,31 +416,50 @@ async function main() {
             let descriptionSummary = req.body.descriptionSummary;
             let description = req.body.description;
 
-            await getDB().collection(COLLECTION_NAME).updateOne({
-                "_id": ObjectId(req.params.id)
-            }, {
-                "$set": {
-                    title,
-                    organizer,
-                    category,
-                    hashtags,
-                    address,
-                    postalCode,
-                    latLng,
-                    startDateTime,
-                    endDateTime,
-                    eventImage,
-                    customizedMapMarker,
-                    brandColor,
-                    descriptionSummary,
-                    description
-                }
-            })
+            if(!validationEvent(
+                title,
+                organizer,
+                category,
+                address,
+                postalCode,
+                latLng,
+                startDateTime,
+                endDateTime,
+                descriptionSummary,
+                description,
+                eventImage,
+            )){
+                await getDB().collection(COLLECTION_NAME).updateOne({
+                    "_id": ObjectId(req.params.id)
+                }, {
+                    "$set": {
+                        title,
+                        organizer,
+                        category,
+                        hashtags,
+                        address,
+                        postalCode,
+                        latLng,
+                        startDateTime,
+                        endDateTime,
+                        eventImage,
+                        customizedMapMarker,
+                        brandColor,
+                        descriptionSummary,
+                        description
+                    }
+                })
+    
+                res.status(200);
+                res.json({
+                    message: `modified one event`
+                })
 
-            res.status(200);
-            res.json({
-                message: `modified one event`
-            })
+            } else {
+                return;
+            }
+
+           
 
         } catch (error) {
             res.status(505);
@@ -483,6 +502,8 @@ async function main() {
                 res.json({
                     message: `modified one event`
                 })
+            } else {
+                return;
             }
         } catch (error) {
             res.status(505);
