@@ -74,7 +74,7 @@ async function main() {
             /*5. description */
             let descriptionSummary = req.body.descriptionSummary;
             let description = req.body.description;
-            let reviews = req.body.reviews;
+            // let reviews = req.body.reviews;
 
             const db = getDB();
             await db.collection(COLLECTION_NAME).insertOne({
@@ -92,7 +92,7 @@ async function main() {
                 brandColor,
                 descriptionSummary,
                 description,
-                reviews
+                // reviews
             })
             res.status(200);
             res.json({
