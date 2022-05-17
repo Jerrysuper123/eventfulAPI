@@ -264,7 +264,11 @@ async function main() {
     app.get("/events/categories", async (req, res) => {
         try {
             const db = getDB();
-            let categories = await db.collection("categories").find().toArray();
+            // one instance of projection here
+            let categories = await db.collection("categories").find({},{
+                _id:1,
+                categories: 1
+            }).toArray();
             res.status(200);
             res.json({
                 data: categories
